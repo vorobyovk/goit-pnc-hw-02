@@ -14,6 +14,10 @@ def vigenere_cipher(text, key, mode='encrypt'):
     result = []
     key_len = len(key)
     for i, char in enumerate(text):
+        if char == ' ':
+            result.append(' ')  # Keep spaces as they are
+            continue
+
         key_char = key[i % key_len]
         key_shift = ord(key_char.lower()) - ord('a')
 
@@ -30,6 +34,46 @@ def vigenere_cipher(text, key, mode='encrypt'):
         
         result.append(shifted_char)
     return ''.join(result)
+
+def kasiski_examination(ciphertext):
+    # 1. Find repeated sequences in the ciphertext
+    sequence_lengths = range(3, 6)  # Consider sequences of length 3 to 5
+    sequence_occurrences = {}
+
+    for seq_len in sequence_lengths:
+        for i in range(len(ciphertext) - seq_len + 1):
+            sequence = ciphertext[i:i + seq_len]
+            occurrences = [j for j in range(len(ciphertext)) if ciphertext.startswith(sequence, j)]
+            if len(occurrences) > 1:
+                sequence_occurrences[sequence] = occurrences
+
+    # 2. Calculate distances between repeated sequences
+    distances = []
+    for sequence, occurrences in sequence_occurrences.items():
+        for i in range(len(occurrences) - 1):
+            distances.append(occurrences[i+1] - occurrences[i])
+
+    # 3. Find the most frequent factors of the distances
+    factors = []
+    for distance in distances:
+        for i in range(2, distance + 1):  # Check factors from 2 to distance
+            if distance % i == 0:
+                factors.append(i)
+
+    # Count frequency of each factor
+    factor_counts = {}
+    for factor in factors:
+        if factor in factor_counts:
+            factor_counts[factor] += 1
+        else:
+            factor_counts[factor] = 1
+
+    # Sort factors by frequency
+    sorted_factors = sorted(factor_counts.items(), key=lambda x: x[1], reverse=True)
+
+    # Return a list of possible key lengths (factors), sorted by frequency
+    possible_key_lengths = [factor for factor, count in sorted_factors]
+    return possible_key_lengths
 
 
 def main():    
@@ -61,6 +105,19 @@ def main():
     # Encrypt the text
     encrypted_text = vigenere_cipher(text, key, 'encrypt')
     print("Encrypted text:", encrypted_text)
-
+    print("Length of encrypted text:", len(encrypted_text))
+    print("---------------------------------------------------------")
+    # Decrypt the text
+    decrypted_text = vigenere_cipher(encrypted_text, key, 'decrypt')
+    print("Decrypted text:", decrypted_text)
+    print("Length of decrypted text:", len(decrypted_text))
+    print("---------------------------------------------------------")
+    # Perform Kasiski examination to find possible key lengths
+    possible_key_lengths = kasiski_examination(encrypted_text)
+    if possible_key_lengths:
+        print("\nPossible key lengths (Kasiski examination):", possible_key_lengths)
+    else:
+        print("\nNo repeated sequences found. Kasiski examination could not determine key length.")
+        
 if __name__ == "__main__":
     main()
