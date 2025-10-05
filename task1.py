@@ -89,7 +89,7 @@ def main():
         return
 
     # Extract key from config content
-    key_prefix = "KEY-VEGINER=\""
+    key_prefix = "KEY-VEGINER = \""
     if key_prefix in config_content:
         key_start_index = config_content.find(key_prefix) + len(key_prefix)
         key_end_index = config_content.find("\"", key_start_index)
@@ -118,6 +118,6 @@ def main():
         print("\nPossible key lengths (Kasiski examination):", possible_key_lengths)
     else:
         print("\nNo repeated sequences found. Kasiski examination could not determine key length.")
-        
+
 if __name__ == "__main__":
     main()
