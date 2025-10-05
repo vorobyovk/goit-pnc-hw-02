@@ -24,7 +24,7 @@ def vigenere_cipher(text, key, mode='encrypt'):
         if 'encrypt' == mode:
             shifted_char = chr(((ord(char.lower()) - ord('a') + key_shift) % 26) + ord('a'))
         elif 'decrypt' == mode:
-             shifted_char = chr(((ord(char.lower()) - ord('a') - key_shift + 26) % 26) + ord('a'))
+            shifted_char = chr(((ord(char.lower()) - ord('a') - key_shift + 26) % 26) + ord('a'))
         else:
             raise ValueError("Invalid mode. Choose 'encrypt' or 'decrypt'.")
         
